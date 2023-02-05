@@ -40,14 +40,23 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 
 
+// Swagger
+const swaggerUI = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./swagger.yaml');
+
 // app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 3004;
 
 app.get('/', (req, res) => {
-  res.send('jobs api 22');
+  // res.send('jobs api 22');
+  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
+
 });
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
+
 
 const start = async () => {
   try {
