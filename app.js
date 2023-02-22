@@ -48,7 +48,7 @@ const swaggerDocument = YAML.load('./swagger.yaml');
 // app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
-const port = process.env.PORT || 3004;
+const port = process.env.PORT || 3005;
 
 app.get('/', (req, res) => {
   // res.send('jobs api 22');
