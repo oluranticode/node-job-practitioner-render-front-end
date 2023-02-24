@@ -14,20 +14,17 @@ const register = async(req, res) => {
        throw new BadRequestError('Please provide all neccessary details');
     }
 
-    // ........Hash Password.............
-//    const {name, email, password} = req.body;
-//    const salt = await bcrypt.genSalt(10);
-//    const hashPassword = await bcrypt.hash(password, salt);
-//    const tempUser = {name, email, password:hashPassword}
-//    const user = await User.create({...tempUser});
-
-//.......Generate TOKEN............
-// const user = await User.create({...req.body});
-// const token = jwt.sign({userId:user._id, name:user.name}, "jwtSecret", {expiresIn: '30d'})
-
     const user = await User.create({...req.body});
     const token = user.createJWT();
-    res.status(StatusCodes.CREATED).json({user:{name:user.name}, token:{token:token}})
+    // res.status(StatusCodes.CREATED).json({user:{name:user.name}, token:{token:token}})
+    res.status(StatusCodes.CREATED).json({user:{
+        email: user.email,
+        lastName: user.lastName,
+        location: user.location,
+        name: user.name,
+        token,
+      },
+    })
 }
 
 const login = async(req, res) => {
@@ -46,7 +43,15 @@ const login = async(req, res) => {
             throw new UnauthenticatedError('Password does not match!');
         }
         const token = user.createJWT();
-        res.status(StatusCodes.OK).json({user : {name:user.name}, token})
+        // res.status(StatusCodes.OK).json({user : {name:user.name}, token})
+        res.status(StatusCodes.CREATED).json({user:{
+            email: user.email,
+            lastName: user.lastName,
+            location: user.location,
+            name: user.name,
+            token,
+          },
+        })
     
 }
 

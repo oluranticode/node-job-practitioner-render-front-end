@@ -2,12 +2,12 @@ require('dotenv').config();
 require('express-async-errors');
 const express = require('express');
 const app = express();
+const path = require('path');
 
 // extra security packages
 const helmet = require('helmet');
-const cors = require('cors');
 const xss = require('xss-clean');
-const rateLimiter = require('express-rate-limit');
+
 
 // connectDB
 const connectDB = require('./db/connect');
@@ -15,18 +15,13 @@ const connectDB = require('./db/connect');
 const authenticateUser = require('./middleware/authentication');
 
 // error handler
-// const notFoundMiddleware = require('./middleware/not-found');
+const notFoundMiddleware = require('./middleware/not-found');
 const errorHandlerMiddleware = require('./middleware/error-handler');
 
+app.use(express.static(path.resolve(__dirname, './client/build')));
+
 app.use(express.json());
-// extra packages
-app.set(' trust proxy', 1);
-app.use(rateLimiter({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, //limit each IP to 100 request per windowMs
-}));
 app.use(helmet())
-app.use(cors())
 app.use(xss())
 
 
@@ -39,23 +34,20 @@ const jobsRouter = require('./routes/jobs');
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
 
+// app.get('/', (req, res) => {
+//   res.send('Front end Job Api');
 
-// Swagger
-const swaggerUI = require('swagger-ui-express');
-const YAML = require('yamljs');
-const swaggerDocument = YAML.load('./swagger.yaml');
+// });
 
-// app.use(notFoundMiddleware);
+// serve index.html
+app.get('*', (req, res) => {
+  res.sendFile(path.resolve(__dirname, './client/build', 'index.html'));
+});
+
+app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
 
 const port = process.env.PORT || 3005;
-
-app.get('/', (req, res) => {
-  // res.send('jobs api 22');
-  res.send('<h1>Jobs API</h1><a href="/api-docs">Documentation</a>');
-
-});
-app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument));
 
 
 const start = async () => {
