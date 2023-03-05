@@ -28,11 +28,13 @@ app.use(xss())
 // Routers
 const authRouter = require('./routes/auth');
 const jobsRouter = require('./routes/jobs');
+const userRouter = require('./routes/auth');
 
 
 // routes
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/jobs', authenticateUser, jobsRouter);
+app.use('/api/v1/auth', authenticateUser, userRouter);
 
 // app.get('/', (req, res) => {
 //   res.send('Front end Job Api');
